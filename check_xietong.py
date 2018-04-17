@@ -18,7 +18,6 @@ cap["phantomjs.page.customHeaders.User-Agent"] = userAgent
 driver = webdriver.Chrome(executable_path=setting.chromedriver_path)
 driver.set_window_size(1366, 768)
 # driver.set_page_load_timeout(30)
-
 driver.get(setting.xietong_url1)
 driver.save_screenshot('tmp.png')  # 截图，为后面的获取校验码准备
 
@@ -44,8 +43,9 @@ image = Image.open('jiaoyanma.png')
 
 print('校验码识别:', image_to_string(image).strip())
 check_code = image_to_string(image).strip()
-username = setting.dingwei_username
+username = setting.xietong_username
 password = setting.xietong_password
+print(username,password)
 if len(check_code) == 5:
     driver.find_element_by_xpath('//*[@id="txtUserName"]').send_keys(username)
     driver.find_element_by_xpath('//*[@id="txtUserPWD"]').send_keys(password)
