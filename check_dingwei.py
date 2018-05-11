@@ -3,6 +3,7 @@ from Setting import Setting
 from pytesseract import image_to_string, pytesseract
 from selenium import webdriver
 from PIL import Image, ImageEnhance
+from selenium.webdriver.support.select import Select
 
 setting = Setting()
 pytesseract.tesseract_cmd = setting.tesseract_cmd_path  # 需要导入安装的tesseract-ocr的安装地址，否则会报错
@@ -33,8 +34,8 @@ image = Image.open('tmp/validateimg.png')
 validate_num = image_to_string(image)
 print('校验码识别:', image_to_string(image))
 # 一份修整表
-rep = {'><': 'x', '_': '', '|': '1', '‘': '', '}': '7',
-       '\\': '', 'G': '6', 'fi': '5', "1'": 'f', '*': '', ' ': ''}
+rep = {'><': 'x', '_': '', '|': '1', '‘': '', '}': '7', '(': 't', 'D': '0', 'Z': '2', 'S': '5',
+       '\\': '', 'G': '6', '*': '', ' ': ''}
 for r in rep:
     validate_num = validate_num.replace(r, rep[r])
 
@@ -46,14 +47,32 @@ driver.find_element_by_xpath('//*[@id="validateCode"]').send_keys(validate_num) 
 driver.find_element_by_xpath('//*[@id="loginForm"]/div/div[2]/div[1]/div[3]/div/div/div/a').click() # 提交按钮
 # print(setting.dingwei_username, setting.dingwei_password)
 
+
+time.sleep(2)
 driver.find_element_by_xpath('//*[@id="menuTab2"]').click()
-time.sleep(5)
-driver.get(setting.dingwei_url+setting.dingwei_target_url)
+driver.switch_to.frame('mainFrame')
+
+time.sleep(2)
+driver.find_element_by_xpath('//*[@id="child_menu3"]').click()
+
+time.sleep(2)
+driver.switch_to.frame('rightFrame')
+
+driver.find_element_by_xpath('//*[@id="startDate"]').click()
+driver.find_element_by_xpath('//*[@id="startDate"]').send_keys('20180510')
+driver.find_element_by_xpath('//*[@id="endDate"]').click()
+driver.find_element_by_xpath('//*[@id="endDate"]').send_keys('20180511')
+time.sleep(2)
+
+position_type = Select(driver.find_element_by_xpath('//*[@id="source"]'))
+position_type.select_by_visible_text('LBMP定位')
+driver.find_element_by_xpath('//*[@id="msisdn"]').click()
 
 driver.find_element_by_xpath('//*[@id="searchBut"]').click()
-
-
-
+time.sleep(2)
+trs = driver.find_elements_by_xpath('//*[@id="searchForm"]/table[3]/tbody/tr')
+for tr in trs:
+    print(tr.text)
 # driver.quit()
 
 # if __name__ == '__main__':
