@@ -30,7 +30,7 @@ pip install -r requirements.txt
 2. 校验码的ocr的正确度问题。还是有待提高。
 3. 貌似可以用wypython来做 连接mstsc以后的操作。但是操作后的取值?
 4. 页面连接是否正常的判断，也需要
-5. tesseract-ocr能否使用绿色版，方便到时一起打包
+5. tesseract-ocr能否使用免安装版，方便到时一起打包
 
 ## 待思考处理项
 1. 定位系统的某些元素获取失败，修改为分析抓包，然后使用requests获取。
