@@ -2,3 +2,4 @@
 venv/*
 Setting.py
 *.png
+*.log
