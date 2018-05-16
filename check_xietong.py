@@ -142,11 +142,13 @@ def login_action(config, driver):
     校验码的ocr功能可用，但准确率还有待提高，目前的误差还很大
     '''
     image = Image.open('tmp/jiaoyanma2.png')
-
+    # 在另外一台机上运行，需要使用下面注释的两行才能运行正常
+    # tessdata_dir_config = '--tessdata-dir ' + config.get('global', 'tessdata_path')
+    # check_code = image_to_string(image, config=tessdata_dir_config).strip()
     check_code = image_to_string(image).strip()
     print('未修正校验码识别:', check_code)
     # 一份修整表
-    rep = {'><': 'x', '_': '', '|': '1', '‘': '', '}': '7', '|': '1',
+    rep = {'><': 'x', '_': '', '|': '1', '‘': '', '}': '7', '|': '1', "'": '',
            '\\': '', 'G': '6', 'fi': '5', "1'": 'f', '*': '', ' ': ''}
     for r in rep:
         check_code = check_code.replace(r, rep[r])
@@ -165,7 +167,7 @@ def login_action(config, driver):
     driver.find_element_by_xpath('//*[@id="lbtnLogin"]/img').click()
 
 def startup(config, driver):
-    pytesseract.tesseract_cmd = config.get('global', 'tesseract_cmd_path')  # 需要导入安装的tesseract-ocr的安装地址，否则会报错
+    # pytesseract.tesseract_cmd = config.get('global', 'tesseract_cmd_path')  # 需要导入安装的tesseract-ocr的安装地址，否则会报错
 
     driver.get(config.get('xietong', 'xietong_url1'))
 

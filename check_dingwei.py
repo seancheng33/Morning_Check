@@ -22,6 +22,9 @@ def login_action(config, driver):
     img.save('tmp/validateimg.png')
 
     image = Image.open('tmp/validateimg.png')
+    # 在另外一台机上运行，需要使用下面注释的两行才能运行正常
+    # tessdata_dir_config = '--tessdata-dir '+config.get('global', 'tessdata_path')
+    # validate_num = image_to_string(image, config=tessdata_dir_config)
     validate_num = image_to_string(image)
     print('校验码识别:', image_to_string(image))
     # 一份修整表,把一些识别错误的内容给修正过来
@@ -39,7 +42,7 @@ def login_action(config, driver):
 
 
 def startup(config, driver):
-    pytesseract.tesseract_cmd = config.get('global', 'tesseract_cmd_path')  # 需要导入安装的tesseract-ocr的安装地址，否则会报错
+    # pytesseract.tesseract_cmd = config.get('global', 'tesseract_cmd_path')  # 需要导入安装的tesseract-ocr的安装地址，否则会报错
 
     driver.get(config.get('dingwei', 'dingwei_url'))  # 网址
     driver.save_screenshot('tmp/dingwei.png')
