@@ -1,5 +1,5 @@
 .idea/*
 venv/*
-Setting.py
+config.ini
 *.png
 *.log

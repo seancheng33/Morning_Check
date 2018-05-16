@@ -1,15 +1,11 @@
 import time
-
 import cv2
 from pytesseract import image_to_string, pytesseract
 from selenium import webdriver
 from PIL import Image, ImageEnhance
-from Setting import Setting
-
-setting = Setting()
 
 
-def login_action(driver):
+def login_action(config, driver):
     driver.save_screenshot('tmp/tmp.png')  # 截图，为后面的获取校验码准备
 
     # 获取校验码区域，并计算出四个值，后面用这些值，裁剪截图，得到校验码，用于ocr
@@ -157,8 +153,8 @@ def login_action(driver):
 
     print('修正后的校验码识别:', check_code)
 
-    username = setting.xietong_username
-    password = setting.xietong_password
+    username = config.get('xietong', 'xietong_username')
+    password = config.get('xietong', 'xietong_password')
 
     driver.find_element_by_xpath('//*[@id="txtUserName"]').clear()  # 先清空输入框
     driver.find_element_by_xpath('//*[@id="txtUserName"]').send_keys(username)
@@ -168,45 +164,42 @@ def login_action(driver):
     driver.find_element_by_xpath('//*[@id="txtLoginCode"]').send_keys(check_code)
     driver.find_element_by_xpath('//*[@id="lbtnLogin"]/img').click()
 
-def startup():
-    pytesseract.tesseract_cmd = setting.tesseract_cmd_path  # 需要导入安装的tesseract-ocr的安装地址，否则会报错
+def startup(config, driver):
+    pytesseract.tesseract_cmd = config.get('global', 'tesseract_cmd_path')  # 需要导入安装的tesseract-ocr的安装地址，否则会报错
 
-    # 浏览器头的内容
-    userAgent = (
-        "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
-    cap = webdriver.DesiredCapabilities.PHANTOMJS
-    cap["phantomjs.page.settings.resourceTimeout"] = 100
-    cap["phantomjs.page.settings.userAgent"] = userAgent
-    cap["phantomjs.page.customHeaders.User-Agent"] = userAgent
-
-    # 无GUI的浏览器phantomjs
-    # driver = webdriver.PhantomJS(executable_path="./lib/phantomjs.exe", desired_capabilities=cap)
-    driver = webdriver.Chrome(executable_path=setting.chromedriver_path)
-    driver.set_window_size(1366, 768)
-    # driver.set_page_load_timeout(30)
-    driver.get(setting.xietong_url1)
+    driver.get(config.get('xietong', 'xietong_url1'))
 
 
-    login_action(driver)
+    login_action(config, driver)
 
     current_url = driver.current_url
     time.sleep(2)
 
     while 'Login.aspx' in current_url:
-        login_action(driver)
+        login_action(config, driver)
         current_url = driver.current_url
         time.sleep(2)
-        if current_url == setting.xietong_url2:
+        if current_url == config.get('xietong', 'xietong_url2'):
             break
 
-    driver.get(setting.xietong_url3)
+    driver.get(config.get('xietong', 'xietong_url3'))
     driver.find_element_by_xpath('//*[@id="urtrackerTd"]/table/tbody/tr[1]/td/a/img').click()
     driver.find_element_by_xpath('//*[@id="Siteheader1_lnkConfig"]').click()
 
     print(driver.find_element_by_xpath('//*[@id="CP1_CP1_lblSmsState"]').text)
 
-    driver.quit()
+    # driver.quit()
 
 
 if __name__ == '__main__':
-    startup()
+    import configparser
+    config = configparser.ConfigParser()
+    config.read_file(open('config.ini', 'r'))
+
+    driver = webdriver.Chrome(executable_path=config.get('global','chromedriver_path'))
+    driver.set_window_size(1366, 768)
+    driver.set_page_load_timeout(30)
+
+    startup(config, driver)
+
+    driver.quit()

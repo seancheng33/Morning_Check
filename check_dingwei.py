@@ -1,15 +1,12 @@
 import time
-from Setting import Setting
 from pytesseract import image_to_string, pytesseract
 from selenium import webdriver
 from PIL import Image, ImageEnhance
 from selenium.webdriver.support.select import Select
 
-setting = Setting()
-
 
 # 登陆操作
-def login_action(driver):
+def login_action(config, driver):
     driver.save_screenshot('tmp/dingwei.png')  # 截图，方便后面ocr
     src_img = driver.find_element_by_xpath('//*[@id="img"]')
 
@@ -35,32 +32,26 @@ def login_action(driver):
 
     print('修正后：', validate_num)
     #
-    driver.find_element_by_xpath('//*[@id="username_"]').send_keys(setting.dingwei_username)  # 用户名
-    driver.find_element_by_xpath('//*[@id="password_"]').send_keys(setting.dingwei_password)  # 密码
+    driver.find_element_by_xpath('//*[@id="username_"]').send_keys(config.get('dingwei', 'dingwei_username'))  # 用户名
+    driver.find_element_by_xpath('//*[@id="password_"]').send_keys(config.get('dingwei', 'dingwei_password'))  # 密码
     driver.find_element_by_xpath('//*[@id="validateCode"]').send_keys(validate_num)  # 校验码
     driver.find_element_by_xpath('//*[@id="loginForm"]/div/div[2]/div[1]/div[3]/div/div/div/a').click()  # 提交按钮
 
 
-def startup():
-    pytesseract.tesseract_cmd = setting.tesseract_cmd_path  # 需要导入安装的tesseract-ocr的安装地址，否则会报错
+def startup(config, driver):
+    pytesseract.tesseract_cmd = config.get('global', 'tesseract_cmd_path')  # 需要导入安装的tesseract-ocr的安装地址，否则会报错
 
-    # 无GUI的浏览器phantomjs
-    # driver = webdriver.PhantomJS(executable_path="./lib/phantomjs.exe", desired_capabilities=cap)
-    driver = webdriver.Chrome(executable_path=setting.chromedriver_path)
-    driver.set_window_size(1366, 768)
-    driver.set_page_load_timeout(30)
-
-    driver.get(setting.dingwei_url)  # 网址
+    driver.get(config.get('dingwei', 'dingwei_url'))  # 网址
     driver.save_screenshot('tmp/dingwei.png')
 
-    login_action(driver)
+    login_action(config, driver)
 
     current_url = driver.current_url  # 获取网站，判断是否登录成功
     # print(current_url)
 
     # 判断网站是否登录成功，如果跳转到的网址里面包含login.action的话，表示登陆失败，需要重新执行登陆的操作
     while 'login.action' in current_url:
-        login_action(driver)
+        login_action(config, driver)
         current_url = driver.current_url
 
     time.sleep(2)
@@ -95,8 +86,18 @@ def startup():
     trs = driver.find_elements_by_xpath('//*[@id="searchForm"]/table[3]/tbody/tr')
     for tr in trs[:-1]:  # 最后一行不要，是页码行
         print(tr.text)
-    driver.quit()
+    # driver.quit()
 
 
 if __name__ == '__main__':
-    startup()
+    import configparser
+    config = configparser.ConfigParser()
+    config.read_file(open('config.ini', 'r'))
+
+    driver = webdriver.Chrome(executable_path=config.get('global','chromedriver_path'))
+    driver.set_window_size(1366, 768)
+    driver.set_page_load_timeout(30)
+
+    startup(config, driver)
+
+    driver.quit()

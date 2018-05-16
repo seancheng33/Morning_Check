@@ -1,18 +1,11 @@
-'''
-连接sql server数据库
-执行储存过程
-'''
-
 import pymssql
-from Setting import Setting
 
 
-def main():
-    setting = Setting()
-    server = setting.sql_server_server  # 服务器
-    user = setting.sql_server_username  # 用户名
-    password = setting.sql_server_password  # 密码
-    database = setting.sql_server_database  # 数据库名
+def main(config):
+    server = config.get('sql', 'sql_server_server')  # 服务器
+    user = config.get('sql', 'sql_server_username')  # 用户名
+    password = config.get('sql', 'sql_server_password')  # 密码
+    database = config.get('sql', 'sql_server_database')  # 数据库名
 
     with pymssql.connect(server, user, password, database) as conn:
         cur = conn.cursor()
@@ -23,4 +16,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import configparser
+    config = configparser.ConfigParser()
+    config.read_file(open('config.ini', 'r'))
+    main(config)
