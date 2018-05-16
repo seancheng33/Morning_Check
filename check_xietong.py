@@ -168,42 +168,45 @@ def login_action(driver):
     driver.find_element_by_xpath('//*[@id="txtLoginCode"]').send_keys(check_code)
     driver.find_element_by_xpath('//*[@id="lbtnLogin"]/img').click()
 
-pytesseract.tesseract_cmd = setting.tesseract_cmd_path  # 需要导入安装的tesseract-ocr的安装地址，否则会报错
+def startup():
+    pytesseract.tesseract_cmd = setting.tesseract_cmd_path  # 需要导入安装的tesseract-ocr的安装地址，否则会报错
 
-# 浏览器头的内容
-userAgent = (
-    "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
-cap = webdriver.DesiredCapabilities.PHANTOMJS
-cap["phantomjs.page.settings.resourceTimeout"] = 100
-cap["phantomjs.page.settings.userAgent"] = userAgent
-cap["phantomjs.page.customHeaders.User-Agent"] = userAgent
+    # 浏览器头的内容
+    userAgent = (
+        "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
+    cap = webdriver.DesiredCapabilities.PHANTOMJS
+    cap["phantomjs.page.settings.resourceTimeout"] = 100
+    cap["phantomjs.page.settings.userAgent"] = userAgent
+    cap["phantomjs.page.customHeaders.User-Agent"] = userAgent
 
-# 无GUI的浏览器phantomjs
-# driver = webdriver.PhantomJS(executable_path="./lib/phantomjs.exe", desired_capabilities=cap)
-driver = webdriver.Chrome(executable_path=setting.chromedriver_path)
-driver.set_window_size(1366, 768)
-# driver.set_page_load_timeout(30)
-driver.get(setting.xietong_url1)
+    # 无GUI的浏览器phantomjs
+    # driver = webdriver.PhantomJS(executable_path="./lib/phantomjs.exe", desired_capabilities=cap)
+    driver = webdriver.Chrome(executable_path=setting.chromedriver_path)
+    driver.set_window_size(1366, 768)
+    # driver.set_page_load_timeout(30)
+    driver.get(setting.xietong_url1)
 
 
-login_action(driver)
-
-current_url = driver.current_url
-time.sleep(2)
-
-while 'Login.aspx' in current_url:
     login_action(driver)
+
     current_url = driver.current_url
     time.sleep(2)
-    if current_url == setting.xietong_url2:
-        break
 
-driver.get(setting.xietong_url3)
-driver.find_element_by_xpath('//*[@id="urtrackerTd"]/table/tbody/tr[1]/td/a/img').click()
-driver.find_element_by_xpath('//*[@id="Siteheader1_lnkConfig"]').click()
+    while 'Login.aspx' in current_url:
+        login_action(driver)
+        current_url = driver.current_url
+        time.sleep(2)
+        if current_url == setting.xietong_url2:
+            break
 
-print(driver.find_element_by_xpath('//*[@id="CP1_CP1_lblSmsState"]').text)
+    driver.get(setting.xietong_url3)
+    driver.find_element_by_xpath('//*[@id="urtrackerTd"]/table/tbody/tr[1]/td/a/img').click()
+    driver.find_element_by_xpath('//*[@id="Siteheader1_lnkConfig"]').click()
 
-driver.quit()
-# if __name__ == '__main__':
-#     pass
+    print(driver.find_element_by_xpath('//*[@id="CP1_CP1_lblSmsState"]').text)
+
+    driver.quit()
+
+
+if __name__ == '__main__':
+    startup()
