@@ -15,13 +15,13 @@ if __name__ == '__main__':
 
     pytesseract.tesseract_cmd = config.get('global', 'tesseract_cmd_path')  # 需要导入安装的tesseract-ocr的安装地址，否则会报错
 
-    # 浏览器头的内容
-    userAgent = (
-        "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
-    cap = webdriver.DesiredCapabilities.PHANTOMJS
-    cap["phantomjs.page.settings.resourceTimeout"] = 100
-    cap["phantomjs.page.settings.userAgent"] = userAgent
-    cap["phantomjs.page.customHeaders.User-Agent"] = userAgent
+    # # 浏览器头的内容
+    # userAgent = (
+    #     "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
+    # cap = webdriver.DesiredCapabilities.PHANTOMJS
+    # cap["phantomjs.page.settings.resourceTimeout"] = 100
+    # cap["phantomjs.page.settings.userAgent"] = userAgent
+    # cap["phantomjs.page.customHeaders.User-Agent"] = userAgent
 
     # 无GUI的浏览器phantomjs
     # driver = webdriver.PhantomJS(executable_path="./lib/phantomjs.exe", desired_capabilities=cap)
