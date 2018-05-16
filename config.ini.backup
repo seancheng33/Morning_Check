@@ -1,0 +1,23 @@
+[global]
+chromedriver_path = ./lib/chromedriver.exe
+PhantomJS_path = ./lib/phantomjs.exe
+tesseract_cmd_path =
+tessdata_path =
+
+[sql]
+sql_server_username =
+sql_server_password =
+sql_server_server =
+sql_server_database =
+
+[xietong]
+xietong_username =
+xietong_password =
+xietong_url1 =
+xietong_url2 =
+xietong_url3 =
+
+[dingwei]
+dingwei_username =
+dingwei_password =
+dingwei_url =
